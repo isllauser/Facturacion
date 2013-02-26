@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security" 
+xmlns:beans="http://www.springframework.org/schema/beans" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+http://www.springframework.org/schema/security 
+http://www.springframework.org/schema/security/spring-security-2.0.1.xsd"> 
+	<http auto-config="true" access-decision-manager-ref="accessDecisionManager">
+
+	
+		<intercept-url pattern="/web/**" access="ROLE_USER" />
+		<intercept-url pattern="/mobil/**" access="ROLE_USER" />
+		<intercept-url pattern="/admin/factura/**" access="ROLE_USER" />
+
+    	
+    	
+    	
+    	
+	    <logout logout-success-url="/index.jsp"/> 
+	    <form-login login-page="/index.jsp" default-target-url="/admin/facturas/index.html" authentication-failure-url="/index.jsp?error=true"/>
+	</http>
+	
+	<beans:bean id="accessDecisionManager"
+        class="org.springframework.security.vote.AffirmativeBased">
+        <beans:property name="decisionVoters">
+            <beans:list>
+            	<beans:bean
+					class="org.springframework.security.vote.RoleVoter" />
+				<beans:bean
+					class="org.springframework.security.vote.AuthenticatedVoter" />
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+    
+    <authentication-provider>
+	<password-encoder hash="sha"/>
+	 <jdbc-user-service data-source-ref="dataSource"
+        users-by-username-query="select RFC_EMISOR as username, PASSWD as password, ESTATUS as enabled from EMISOR where RFC_EMISOR = ?"
+        authorities-by-username-query="select RFC_EMISOR as username, ROL as authorities from EMISOR where RFC_EMISOR = ?"
+        />
+	
+	</authentication-provider>
+	
+	
+	<beans:bean class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" id="passwordEncoder"/> 
+	
+	<!-- 
+	<password-encoder hash="sha"/>
+	
+	 <jdbc-user-service data-source-ref="dataSource"
+        users-by-username-query="select RFC_EMISOR as username, PASSWD as password, ESTATUS as enabled from EMISOR where RFC_EMISOR = ?"
+        authorities-by-username-query="select RFC_EMISOR as username, ROL as authorities from EMISOR where RFC_EMISOR = ?"
+        />
+	 -->
+
+</beans:beans> 
